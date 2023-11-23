@@ -17,11 +17,11 @@ const ordersSchema = Joi.object({
   quantity: Joi.number(),
 });
 
-const userSchema = Joi.object({
+const userValidateSchema = Joi.object({
   userId: Joi.number().required().messages({ 'any.required': 'User ID is required' }),
   username: Joi.string().required().messages({
-        'any.required': 'Username is required',
-        'string.unique': 'Username must be unique',
+        'any.required':'Username is required',
+        'string.unique':'Username must be unique',
       }),
   password: Joi.string().required().messages({ 'any.required': 'Password is required' }),
   fullName: fullNameSchema,
@@ -36,4 +36,4 @@ const userSchema = Joi.object({
   orders: Joi.array().items(ordersSchema),
 });
 
-module.exports = userSchema;
+export default userValidateSchema;

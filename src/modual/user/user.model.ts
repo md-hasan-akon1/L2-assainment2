@@ -19,7 +19,7 @@ const OrdersSchema = new Schema<TOrders>([{
 }]);
 
 const UserSchema = new Schema<TUser,UserModel>({
-  userId: { type: Number, required: [true, "userId is required"] },
+  userId: { type: Number,unique:true, required: [true, "userId is required"], },
   username: {
     type: String,
     required: [true, "username is required"],
@@ -39,11 +39,13 @@ const UserSchema = new Schema<TUser,UserModel>({
   address: addressSchema,
   orders: OrdersSchema,
 });
+UserSchema.index({ userId: 1,username:1,email:1}, { unique: true });
 
-// UserSchema.statics.isUserExists = async function (id: number) {
-//   const existingUser = await User.findOne({ id });
-//   return existingUser;
-// };
+
+UserSchema.statics.isUserExists = async function (id: number) {
+  const existingUser = await User.findOne({ id });
+  return existingUser;
+};
 UserSchema.statics.isUserExists=async function (id:number) {
   const existingUser=await User.findOne({userId:id})
   return existingUser;

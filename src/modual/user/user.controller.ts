@@ -1,27 +1,40 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import { userServices } from "./user.service";
+import userValidateSchema from "./use.validation";
+
 
 //create user
 const createUser = async (req: Request, res: Response) => {
   try {
     const data = req.body;
+    const { error} = userValidateSchema.validate(data);
     const result = await userServices.createUser(data);
+     if(error){
+      res.status(201).json({
+        success: false,
+        massage: "User created failed!",
+        data: error.details,
+
+      });
+     }
     res.status(200).json({
       success: true,
       massage: "User created successfully!",
       data: result,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     });
   } catch (err: any) {
-    console.log(err);
+     console.log(err);
     res.json({
       success: false,
-      message: err.code == 11000 ? "duplicate data" : "user not created",
+      message: err.code == 11000 ? "duplicate data" :err.errors?err.errors : "user not created",
+      field: err.keyValue,
       error: err.code,
     });
   }
 };
+
+
 
 //get all user
 const getAllUser = async (req: Request, res: Response) => {
@@ -36,7 +49,7 @@ const getAllUser = async (req: Request, res: Response) => {
     res.send(err);
   }
 };
-
+//get A user
 const getAUserC = async (req: Request, res: Response) => {
   const id = req.params.userId;
   const result = await userServices.getAUserS(parseInt(id));
@@ -67,6 +80,7 @@ const getAUserC = async (req: Request, res: Response) => {
     });
   }
 };
+// update a existing user
 
 
 export const userController = {
