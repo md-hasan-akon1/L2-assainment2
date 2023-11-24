@@ -8,33 +8,35 @@ import userValidateSchema from "./use.validation";
 const createUser = async (req: Request, res: Response) => {
   try {
     const data = req.body;
-    const { error} = userValidateSchema.validate(data);
+    const { error } = userValidateSchema.validate(data);
     const result = await userServices.createUser(data);
-     if(error){
+    if (error) {
       res.status(201).json({
         success: false,
         massage: "User created failed!",
         data: error.details,
-
       });
-     }
+    }
     res.status(200).json({
       success: true,
       massage: "User created successfully!",
       data: result,
     });
   } catch (err: any) {
-     console.log(err);
+    console.log(err);
     res.json({
       success: false,
-      message: err.code == 11000 ? "duplicate data" :err.errors?err.errors : "user not created",
+      message:
+        err.code == 11000
+          ? "duplicate data"
+          : err.errors
+          ? err.errors
+          : "user not created",
       field: err.keyValue,
       error: err.code,
     });
   }
 };
-
-
 
 //get all user
 const getAllUser = async (req: Request, res: Response) => {
@@ -81,10 +83,40 @@ const getAUserC = async (req: Request, res: Response) => {
   }
 };
 // update a existing user
+const updateAUserC = async (req: Request, res: Response) => {
 
+  try {
+    const id = parseInt(req.params.userId);
+    const data=req.body
+    // const updateDoc = {
+    //   $set: {
+    //    ...data
+    //   },
+    // };
+    const result = await userServices.updateAUserS(id,data);
+    
+    if (result == null) {
+      res.status(404).json({
+        success: false,
+        message: "User not found",
+        error: {
+          code: 404,
+          description: "User not found!",
+        },
+      });
+    }
+
+  res.status(200).json({
+    result
+  })
+  } catch (err) {
+    console.log(err);
+  }
+};
 
 export const userController = {
   createUser,
   getAllUser,
   getAUserC,
+  updateAUserC,
 };

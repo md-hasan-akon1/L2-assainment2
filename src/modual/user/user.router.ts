@@ -7,6 +7,7 @@ userRouter.post('/',userController.createUser)
 
 userRouter.get('/',userController.getAllUser)
 userRouter.get('/:userId',userController.getAUserC)
+userRouter.put('/:userId',userController.updateAUserC)
 
 
 

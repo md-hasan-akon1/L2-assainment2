@@ -1,5 +1,11 @@
 import mongoose, { model } from "mongoose";
-import { TAddress, TFullName, TOrders, TUser, UserModel } from "./user.interfec";
+import {
+  TAddress,
+  TFullName,
+  TOrders,
+  TUser,
+  UserModel,
+} from "./user.interfec";
 const { Schema } = mongoose;
 
 const fullNameSchema = new Schema<TFullName>({
@@ -12,14 +18,24 @@ const addressSchema = new Schema<TAddress>({
   city: { type: String, required: [true, " city is required"] },
   country: { type: String, required: [true, "country is required"] },
 });
-const OrdersSchema = new Schema<TOrders>([{
-  productName: { type: String },
-  price: { type: Number },
-  quantity: { type: Number },
-}]);
+const OrdersSchema = new Schema<TOrders>([
+  {
+    productName: { type: String },
+    price: { type: Number },
+    quantity: { type: Number },
+  },
+]);
 
-const UserSchema = new Schema<TUser,UserModel>({
-  userId: { type: Number,unique:true, required: [true, "userId is required"], },
+const UserSchema = new Schema<TUser, UserModel>({
+  userId: {
+    type: Number,
+    unique: true,
+    required: [true, "userId is required"],
+    validate: {
+      validator: Number.isInteger,
+      message: "userId must be an integer.",
+    },
+  },
   username: {
     type: String,
     required: [true, "username is required"],
@@ -38,18 +54,16 @@ const UserSchema = new Schema<TUser,UserModel>({
   hobbies: [String],
   address: addressSchema,
   orders: OrdersSchema,
-});
-UserSchema.index({ userId: 1,username:1,email:1}, { unique: true });
-
+},{strict:false,timestamps: false});
+// UserSchema.index({ userId: 1, username: 1, email: 1 }, { unique: true });
 
 UserSchema.statics.isUserExists = async function (id: number) {
-  const existingUser = await User.findOne({ id });
+  const existingUser = await User.findOne({userId: id });
   return existingUser;
 };
-UserSchema.statics.isUserExists=async function (id:number) {
-  const existingUser=await User.findOne({userId:id})
+UserSchema.statics.isUserExists = async function (id: number) {
+  const existingUser = await User.findOne({ userId: id });
   return existingUser;
-}
+};
 
-
-export const User =model<TUser,UserModel>('User', UserSchema);
+export const User = model<TUser, UserModel>("User", UserSchema);
