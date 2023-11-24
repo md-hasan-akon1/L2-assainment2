@@ -18,17 +18,19 @@ const getAllUser = async () => {
 };
 // get a user by userId
 const getAUserS = async (id: number) => {
-  if (await User.isUserExists(id)) {
+  const existingUser = await User.isUserExists(id);
+  if (existingUser) {
     const result = await User.findOne({ userId: id }, { password: 0 });
     return result;
   }
-  return await User.isUserExists(id);
+  return existingUser;
 };
 
 //update a existing user by userID
 const updateAUserS = async (id: number, data: any) => {
+  const existingUser = await User.isUserExists(id);
   try {
-    if (await User.isUserExists(id)) {
+    if (existingUser) {
       const updatedUser = await User.findOneAndUpdate(
         { userId: id },
         { $set: data },
@@ -45,12 +47,12 @@ const updateAUserS = async (id: number, data: any) => {
     return error;
   }
 
-  return await User.isUserExists(id);
+  return existingUser;
 };
 //Delete A USer
 const DeleteAUserS = async (id: number) => {
-  if (await User.isUserExists(id)) {
-    console.log("hasan");
+  const existingUser = await User.isUserExists(id);
+  if (existingUser) {
     const result = await User.deleteOne({ userId: id });
     return result;
   }
@@ -58,24 +60,52 @@ const DeleteAUserS = async (id: number) => {
 };
 
 // check order filed and add order
-const SetOrdersS =async (id: number, data: TOrders) => {
-  if (await User.isUserExists(id)) {
-        if(await User.findOne({orders:{$exists:true},userId:id})){
-               const result=await User.updateOne({orders:{$exists:true},userId:id},{
-                $push:{orders:data}
-               }).select('-_id')
-            return result   
-        }else {
-
-                const withOutOrdersFiled=await User.updateOne({userId:id},{$set:{orders:[data]}})
-
-                return withOutOrdersFiled
+const SetOrdersS = async (id: number, data: TOrders) => {
+  const existingUser = await User.isUserExists(id);
+  if (existingUser) {
+    if (await User.findOne({ orders: { $exists: true }, userId: id })) {
+      const result = await User.updateOne(
+        { orders: { $exists: true }, userId: id },
+        {
+          $push: { orders: data },
         }
-       
+      ).select("-_id");
+      return result;
+    } else {
+      const withOutOrdersFiled = await User.updateOne(
+        { userId: id },
+        { $set: { orders: [data] } }
+      );
+
+      return withOutOrdersFiled;
+    }
   }
-  return null
+  return null;
+};
+//get a specific user orders
+const getOrdersS = async (id: number) => {
+  const existingUser = await User.isUserExists(id);
+  if (existingUser) {
+    return existingUser?.orders;
+  } else {
+    return false;
+  }
 };
 
+//get total price a specific user orders
+const getTotalPriceS = async (id: number) => {
+  const existingUser = await User.isUserExists(id);
+  if (existingUser) {
+    const products = existingUser?.orders;
+    const totalPrice = products?.reduce(
+      (sum, product) => sum + (product.price * product.quantity),
+      0
+    );
+    return totalPrice
+  } else {
+    return false;
+  }
+};
 export const userServices = {
   createUser,
   getAllUser,
@@ -83,4 +113,6 @@ export const userServices = {
   updateAUserS,
   DeleteAUserS,
   SetOrdersS,
+  getOrdersS,
+  getTotalPriceS,
 };

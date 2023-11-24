@@ -126,15 +126,14 @@ const DeleteAUserC = async (req: Request, res: Response) => {
           description: "User not found!",
         },
       });
-    }else if(result.deletedCount==1){
+    } else if (result.deletedCount == 1) {
       res.status(200).json({
         success: true,
         message: "User deleted successfully!",
         data: null,
-      })
+      });
     }
     console.log(result);
-    
   } catch (err) {
     console.log(err);
     res.status(404).json({
@@ -144,38 +143,86 @@ const DeleteAUserC = async (req: Request, res: Response) => {
   }
 };
 // check order filed and add order
-const SetOrdersC= async(req:Request,res:Response)=>{
-try{
-  const id=parseInt(req.params.userId)
-  const data=req.body
-  const result=await userServices.SetOrdersS(id, data)
-  console.log(result)
-  if(!result||result.modifiedCount!==1){
+const SetOrdersC = async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.userId);
+    const data = req.body;
+    const result = await userServices.SetOrdersS(id, data);
+    console.log(result);
+    if (!result || result.modifiedCount !== 1) {
+      res.status(404).json({
+        success: false,
+        message: "User not found",
+        error: {
+          code: 404,
+          description: "User not found!",
+        },
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "Order created successfully!",
+      data: null,
+    });
+  } catch (err) {
     res.status(404).json({
-      "success": false,
-      "message": "User not found",
-      "error": {
-          "code": 404,
-          "description": "User not found!"
-      }
-  })
+      success: false,
+      message: "User not found",
+      error: {
+        code: 404,
+        description: "User not found!",
+      },
+    });
+  }
+};
+
+//get a specific user orders
+
+const getOrdersC = async (req: Request, res: Response) => {
+  const id = parseInt(req.params.userId);
+  const result = await userServices.getOrdersS(id);
+  if (!result) {
+    res.status(404).json({
+      success: false,
+      message: "User not found",
+      error: {
+        code: 404,
+        description: "User not found!",
+      },
+    });
+  } else {
+    res.status(200).json({
+      success: true,
+      message: "Order fetched successfully!",
+      data: {
+        result,
+      },
+    });
+  }
+};
+
+///get total price a specific user orders
+const getTotalPriceC = async (req: Request, res: Response) => {
+  const id = parseInt(req.params.userId);
+  const result = await userServices.getTotalPriceS(id);
+  if (!result) {
+    res.status(404).json({
+      success: false,
+      message: "User not found",
+      error: {
+        code: 404,
+        description: "User not found!",
+      },
+    });
   }
   res.status(200).json({
-    "success": true,
-    "message": "Order created successfully!",
-    "data": null
-  })
-}catch(err){
-  res.status(404).json({
-    "success": false,
-    "message": "User not found",
-    "error": {
-        "code": 404,
-        "description": "User not found!"
-    }
-})
-}
-}
+    success: true,
+    message: "Total price calculated successfully!",
+    data: {
+      totalPrice: result,
+    },
+  });
+};
 export const userController = {
   createUser,
   getAllUser,
@@ -183,4 +230,6 @@ export const userController = {
   updateAUserC,
   DeleteAUserC,
   SetOrdersC,
+  getOrdersC,
+  getTotalPriceC,
 };
