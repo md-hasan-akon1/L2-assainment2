@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { TUser } from "./user.interfec";
+import { TOrders, TUser } from "./user.interfec";
 import { User } from "./user.model";
 
 const createUser = async (data: TUser) => {
@@ -41,7 +41,6 @@ const updateAUserS = async (id: number, data: any) => {
         return updatedUser;
       }
     }
-    
   } catch (error) {
     return error;
   }
@@ -49,19 +48,33 @@ const updateAUserS = async (id: number, data: any) => {
   return await User.isUserExists(id);
 };
 //Delete A USer
-const DeleteAUserS=async(id:number)=>{
-if(await User.isUserExists(id)){
-console.log("hasan")
-const result = await User.deleteOne({ userId: id })
- return result
-}
-return null;
-}
+const DeleteAUserS = async (id: number) => {
+  if (await User.isUserExists(id)) {
+    console.log("hasan");
+    const result = await User.deleteOne({ userId: id });
+    return result;
+  }
+  return null;
+};
 
 // check order filed and add order
-const SetOrdersC=()=>{
+const SetOrdersS =async (id: number, data: TOrders) => {
+  if (await User.isUserExists(id)) {
+        if(await User.findOne({orders:{$exists:true},userId:id})){
+               const result=await User.updateOne({orders:{$exists:true},userId:id},{
+                $push:{orders:data}
+               }).select('-_id')
+            return result   
+        }else {
 
-}
+                const withOutOrdersFiled=await User.updateOne({userId:id},{$set:{orders:[data]}})
+
+                return withOutOrdersFiled
+        }
+       
+  }
+  return null
+};
 
 export const userServices = {
   createUser,
@@ -69,5 +82,5 @@ export const userServices = {
   getAUserS,
   updateAUserS,
   DeleteAUserS,
-  SetOrdersC
+  SetOrdersS,
 };

@@ -144,9 +144,37 @@ const DeleteAUserC = async (req: Request, res: Response) => {
   }
 };
 // check order filed and add order
-const SetOrdersC=(req:Request,res:Response)=>{
-const id=parseInt(req.params.userId)
-const data=req.body
+const SetOrdersC= async(req:Request,res:Response)=>{
+try{
+  const id=parseInt(req.params.userId)
+  const data=req.body
+  const result=await userServices.SetOrdersS(id, data)
+  console.log(result)
+  if(!result||result.modifiedCount!==1){
+    res.status(404).json({
+      "success": false,
+      "message": "User not found",
+      "error": {
+          "code": 404,
+          "description": "User not found!"
+      }
+  })
+  }
+  res.status(200).json({
+    "success": true,
+    "message": "Order created successfully!",
+    "data": null
+  })
+}catch(err){
+  res.status(404).json({
+    "success": false,
+    "message": "User not found",
+    "error": {
+        "code": 404,
+        "description": "User not found!"
+    }
+})
+}
 }
 export const userController = {
   createUser,

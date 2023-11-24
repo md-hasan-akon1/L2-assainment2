@@ -18,13 +18,13 @@ const addressSchema = new Schema<TAddress>({
   city: { type: String, required: [true, " city is required"] },
   country: { type: String, required: [true, "country is required"] },
 });
-const OrdersSchema = new Schema<TOrders>([
+ const OrdersSchema = new Schema<TOrders>(
   {
     productName: { type: String },
     price: { type: Number },
     quantity: { type: Number },
   },
-]);
+);
 
 const UserSchema = new Schema<TUser, UserModel>({
   userId: {
@@ -53,7 +53,7 @@ const UserSchema = new Schema<TUser, UserModel>({
   isActive: { type: Boolean, required: [true, "is active status required"] },
   hobbies: [String],
   address: addressSchema,
-  orders: OrdersSchema,
+  orders: [OrdersSchema],
 },{strict:false,timestamps: false});
 // UserSchema.index({ userId: 1, username: 1, email: 1 }, { unique: true });
 
