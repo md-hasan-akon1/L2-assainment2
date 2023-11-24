@@ -27,7 +27,6 @@ const getAUserS = async (id: number) => {
 
 //update a existing user by userID
 const updateAUserS = async (id: number, data: any) => {
-  //   console.log("this is my control", id, data);
   try {
     if (await User.isUserExists(id)) {
       const updatedUser = await User.findOneAndUpdate(
@@ -49,10 +48,26 @@ const updateAUserS = async (id: number, data: any) => {
 
   return await User.isUserExists(id);
 };
+//Delete A USer
+const DeleteAUserS=async(id:number)=>{
+if(await User.isUserExists(id)){
+console.log("hasan")
+const result = await User.deleteOne({ userId: id })
+ return result
+}
+return null;
+}
+
+// check order filed and add order
+const SetOrdersC=()=>{
+
+}
 
 export const userServices = {
   createUser,
   getAllUser,
   getAUserS,
   updateAUserS,
+  DeleteAUserS,
+  SetOrdersC
 };

@@ -3,7 +3,6 @@ import { Request, Response } from "express";
 import { userServices } from "./user.service";
 import userValidateSchema from "./use.validation";
 
-
 //create user
 const createUser = async (req: Request, res: Response) => {
   try {
@@ -84,17 +83,16 @@ const getAUserC = async (req: Request, res: Response) => {
 };
 // update a existing user
 const updateAUserC = async (req: Request, res: Response) => {
-
   try {
     const id = parseInt(req.params.userId);
-    const data=req.body
+    const data = req.body;
     // const updateDoc = {
     //   $set: {
     //    ...data
     //   },
     // };
-    const result = await userServices.updateAUserS(id,data);
-    
+    const result = await userServices.updateAUserS(id, data);
+
     if (result == null) {
       res.status(404).json({
         success: false,
@@ -106,17 +104,55 @@ const updateAUserC = async (req: Request, res: Response) => {
       });
     }
 
-  res.status(200).json({
-    result
-  })
+    res.status(200).json({
+      result,
+    });
   } catch (err) {
     console.log(err);
   }
 };
+// Delete A User
+const DeleteAUserC = async (req: Request, res: Response) => {
+  try {
+    const id: number = parseInt(req.params.userId);
+    const result = await userServices.DeleteAUserS(id);
 
+    if (!result) {
+      res.status(404).json({
+        success: false,
+        message: "User not found",
+        error: {
+          code: 404,
+          description: "User not found!",
+        },
+      });
+    }else if(result.deletedCount==1){
+      res.status(200).json({
+        success: true,
+        message: "User deleted successfully!",
+        data: null,
+      })
+    }
+    console.log(result);
+    
+  } catch (err) {
+    console.log(err);
+    res.status(404).json({
+      success: false,
+      massage: err,
+    });
+  }
+};
+// check order filed and add order
+const SetOrdersC=(req:Request,res:Response)=>{
+const id=parseInt(req.params.userId)
+const data=req.body
+}
 export const userController = {
   createUser,
   getAllUser,
   getAUserC,
   updateAUserC,
+  DeleteAUserC,
+  SetOrdersC,
 };

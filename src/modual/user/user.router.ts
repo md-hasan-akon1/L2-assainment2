@@ -8,6 +8,8 @@ userRouter.post('/',userController.createUser)
 userRouter.get('/',userController.getAllUser)
 userRouter.get('/:userId',userController.getAUserC)
 userRouter.put('/:userId',userController.updateAUserC)
+userRouter.delete('/:userId',userController.DeleteAUserC)
+userRouter.put('/:userId/orders',userController.SetOrdersC)
 
 
 
