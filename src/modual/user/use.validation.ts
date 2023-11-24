@@ -21,7 +21,7 @@ const addressSchema = Joi.object({
     .messages({ "any.required": "Country is required" }),
 });
 
-const ordersSchema = Joi.object({
+export const ordersSchema = Joi.object({
   productName: Joi.string(),
   price: Joi.number(),
   quantity: Joi.number(),
@@ -49,7 +49,7 @@ const userValidateSchema = Joi.object({
     .messages({ "any.required": "Active status is required" }),
   hobbies: Joi.array().items(Joi.string()),
   address: addressSchema,
-  orders: Joi.array().items(ordersSchema),
+  orders: Joi.array().optional().items(ordersSchema),
 });
 
 export default userValidateSchema;

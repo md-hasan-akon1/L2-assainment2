@@ -1,10 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
+
+import { string } from "joi";
 import { TOrders, TUser } from "./user.interfec";
 import { User } from "./user.model";
 
 const createUser = async (data: TUser) => {
-  const result = await User.create(data);
-
+  const user = await User.create(data);
+  const actualUserData = user.toObject({ versionKey: false })
+  const {password, orders,...result}=actualUserData;
+  
   return result;
 };
 
@@ -20,27 +25,29 @@ const getAllUser = async () => {
 const getAUserS = async (id: number) => {
   const existingUser = await User.isUserExists(id);
   if (existingUser) {
-    const result = await User.findOne({ userId: id }, { password: 0 });
+    const result = await User.findOne({ userId: id }, { userId:1,username:1,fullName:1,age:1,email:1,isActive:1,address:1});
     return result;
   }
   return existingUser;
 };
 
 //update a existing user by userID
-const updateAUserS = async (id: number, data: any) => {
+const updateAUserS = async (id: number, data:TUser) => {
   const existingUser = await User.isUserExists(id);
   try {
     if (existingUser) {
       const updatedUser = await User.findOneAndUpdate(
         { userId: id },
-        { $set: data },
-        { new: true }
+        { $set: data},
+        { new: true },
       );
 
       if (!updatedUser) {
         return null;
       } else {
-        return updatedUser;
+        const actualUserData = updatedUser.toObject({ versionKey: false })
+        const {password, orders,...result}=actualUserData;
+        return result;
       }
     }
   } catch (error) {

@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import { userServices } from "./user.service";
-import userValidateSchema from "./use.validation";
+import userValidateSchema, { ordersSchema } from "./use.validation";
 
 //create user
 const createUser = async (req: Request, res: Response) => {
   try {
     const data = req.body;
-    const { error } = userValidateSchema.validate(data);
-    const result = await userServices.createUser(data);
+    const { error, value } = userValidateSchema.validate(data);
+    const result = await userServices.createUser(value);
     if (error) {
       res.status(201).json({
         success: false,
@@ -22,7 +22,6 @@ const createUser = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err: any) {
-    console.log(err);
     res.json({
       success: false,
       message:
@@ -53,7 +52,7 @@ const getAllUser = async (req: Request, res: Response) => {
 //get A user
 const getAUserC = async (req: Request, res: Response) => {
   const id = req.params.userId;
-  const result = await userServices.getAUserS(parseInt(id));
+  const result = await userServices.getAUserS(Number(id));
   try {
     if (result == null) {
       res.status(404).json({
@@ -84,13 +83,8 @@ const getAUserC = async (req: Request, res: Response) => {
 // update a existing user
 const updateAUserC = async (req: Request, res: Response) => {
   try {
-    const id = parseInt(req.params.userId);
+    const id = Number(req.params.userId);
     const data = req.body;
-    // const updateDoc = {
-    //   $set: {
-    //    ...data
-    //   },
-    // };
     const result = await userServices.updateAUserS(id, data);
 
     if (result == null) {
@@ -105,16 +99,25 @@ const updateAUserC = async (req: Request, res: Response) => {
     }
 
     res.status(200).json({
-      result,
+      success: true,
+      message: "User updated successfully!",
+      data: result,
     });
   } catch (err) {
-    console.log(err);
+ res.status(404).json({
+  success: false,
+  message: err,
+  error: {
+    code: 404,
+    description: "User not found!",
+  },
+})
   }
 };
 // Delete A User
 const DeleteAUserC = async (req: Request, res: Response) => {
   try {
-    const id: number = parseInt(req.params.userId);
+    const id: number = Number(req.params.userId);
     const result = await userServices.DeleteAUserS(id);
 
     if (!result) {
@@ -133,9 +136,8 @@ const DeleteAUserC = async (req: Request, res: Response) => {
         data: null,
       });
     }
-    console.log(result);
+    
   } catch (err) {
-    console.log(err);
     res.status(404).json({
       success: false,
       massage: err,
@@ -145,10 +147,10 @@ const DeleteAUserC = async (req: Request, res: Response) => {
 // check order filed and add order
 const SetOrdersC = async (req: Request, res: Response) => {
   try {
-    const id = parseInt(req.params.userId);
+    const id = Number(req.params.userId);
     const data = req.body;
-    const result = await userServices.SetOrdersS(id, data);
-    console.log(result);
+    const {value}=ordersSchema.validate(data)
+    const result = await userServices.SetOrdersS(id, value);
     if (!result || result.modifiedCount !== 1) {
       res.status(404).json({
         success: false,
@@ -179,7 +181,7 @@ const SetOrdersC = async (req: Request, res: Response) => {
 //get a specific user orders
 
 const getOrdersC = async (req: Request, res: Response) => {
-  const id = parseInt(req.params.userId);
+  const id = Number(req.params.userId);
   const result = await userServices.getOrdersS(id);
   if (!result) {
     res.status(404).json({
@@ -203,7 +205,7 @@ const getOrdersC = async (req: Request, res: Response) => {
 
 ///get total price a specific user orders
 const getTotalPriceC = async (req: Request, res: Response) => {
-  const id = parseInt(req.params.userId);
+  const id = Number(req.params.userId);
   const result = await userServices.getTotalPriceS(id);
   if (!result) {
     res.status(404).json({

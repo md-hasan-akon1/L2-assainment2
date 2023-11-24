@@ -31,26 +31,42 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
+const bcrypt_1 = __importDefault(require("bcrypt"));
+const config_1 = __importDefault(require("../../app/config"));
 const { Schema } = mongoose_1.default;
 const fullNameSchema = new Schema({
     firstName: { type: String, required: [true, "first name is required"] },
     lastName: { type: String, required: [true, "last name is required"] },
+    _id: false
 });
 const addressSchema = new Schema({
     street: { type: String, required: [true, "street  is required"] },
     city: { type: String, required: [true, " city is required"] },
     country: { type: String, required: [true, "country is required"] },
+    _id: false
 });
-const OrdersSchema = new Schema([{
-        productName: { type: String },
-        price: { type: Number },
-        quantity: { type: Number },
-    }]);
+const OrdersSchema = new Schema({
+    productName: { type: String },
+    price: { type: Number },
+    quantity: { type: Number },
+    _id: false
+});
 const UserSchema = new Schema({
-    userId: { type: Number, unique: true, required: [true, "userId is required"], },
+    userId: {
+        type: Number,
+        unique: true,
+        required: [true, "userId is required"],
+        validate: {
+            validator: Number.isInteger,
+            message: "userId must be an integer.",
+        },
+    },
     username: {
         type: String,
         required: [true, "username is required"],
@@ -62,22 +78,33 @@ const UserSchema = new Schema({
     email: {
         type: String,
         required: [true, " Email is required"],
-        unique: true,
         lowercase: true,
     },
     isActive: { type: Boolean, required: [true, "is active status required"] },
     hobbies: [String],
     address: addressSchema,
-    orders: OrdersSchema,
+    orders: [OrdersSchema],
+}, { strict: false, timestamps: false });
+//password hashing
+UserSchema.pre('save', function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        this.password = yield bcrypt_1.default.hash(this.password, Number(config_1.default.database_url));
+        next();
+    });
 });
-// UserSchema.statics.isUserExists = async function (id: number) {
-//   const existingUser = await User.findOne({ id });
-//   return existingUser;
-// };
+//password hashing
+// UserSchema.post('save',async function( next) {
+//    await User.updateOne(
+//     { _id: this.userId },
+//     { $unset: { password: 1 } }
+//  );
+//      next()
+// })
+//user checking by statics methods
 UserSchema.statics.isUserExists = function (id) {
     return __awaiter(this, void 0, void 0, function* () {
         const existingUser = yield exports.User.findOne({ userId: id });
         return existingUser;
     });
 };
-exports.User = (0, mongoose_1.model)('User', UserSchema);
+exports.User = (0, mongoose_1.model)("User", UserSchema);
