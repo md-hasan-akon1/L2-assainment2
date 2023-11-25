@@ -10,13 +10,13 @@ const createUser = async (req: Request, res: Response) => {
     const { error, value } = userValidateSchema.validate(data);
     const result = await userServices.createUser(value);
     if (error) {
-      res.status(201).json({
+      return res.status(201).json({
         success: false,
         massage: "User created failed!",
         data: error.details,
       });
     }
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       massage: "User created successfully!",
       data: result,
@@ -38,15 +38,23 @@ const createUser = async (req: Request, res: Response) => {
 
 //get all user
 const getAllUser = async (req: Request, res: Response) => {
+  // console.error("rrr",err)
   try {
     const result = await userServices.getAllUser();
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       massage: "Users fetched successfully!",
       data: result,
     });
   } catch (err) {
-    res.send(err);
+   return res.status(404).json({
+    success: false,
+    message: "User not found",
+    error: {
+      code: 404,
+      description: "User not found!",
+    },
+  });
   }
 };
 //get A user
@@ -54,8 +62,8 @@ const getAUserC = async (req: Request, res: Response) => {
   const id = req.params.userId;
   const result = await userServices.getAUserS(Number(id));
   try {
-    if (result == null) {
-      res.status(404).json({
+    if (!result) {
+       return res.status(404).json({
         success: false,
         message: "User not found",
         error: {
@@ -64,13 +72,13 @@ const getAUserC = async (req: Request, res: Response) => {
         },
       });
     }
-    res.status(200).json({
+    return  res.status(200).json({
       success: true,
       massage: "Users fetched successfully!",
       data: result,
     });
   } catch (err) {
-    res.status(404).json({
+   return  res.status(404).json({
       success: false,
       message: "User not found",
       error: {
@@ -88,7 +96,7 @@ const updateAUserC = async (req: Request, res: Response) => {
     const result = await userServices.updateAUserS(id, data);
 
     if (result == null) {
-      res.status(404).json({
+      return res.status(404).json({
         success: false,
         message: "User not found",
         error: {
@@ -98,13 +106,13 @@ const updateAUserC = async (req: Request, res: Response) => {
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "User updated successfully!",
       data: result,
     });
   } catch (err) {
- res.status(404).json({
+ return res.status(404).json({
   success: false,
   message: err,
   error: {
@@ -121,7 +129,7 @@ const DeleteAUserC = async (req: Request, res: Response) => {
     const result = await userServices.DeleteAUserS(id);
 
     if (!result) {
-      res.status(404).json({
+      return res.status(404).json({
         success: false,
         message: "User not found",
         error: {
@@ -130,7 +138,7 @@ const DeleteAUserC = async (req: Request, res: Response) => {
         },
       });
     } else if (result.deletedCount == 1) {
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: "User deleted successfully!",
         data: null,
@@ -138,7 +146,7 @@ const DeleteAUserC = async (req: Request, res: Response) => {
     }
     
   } catch (err) {
-    res.status(404).json({
+    return res.status(404).json({
       success: false,
       massage: err,
     });
@@ -152,7 +160,7 @@ const SetOrdersC = async (req: Request, res: Response) => {
     const {value}=ordersSchema.validate(data)
     const result = await userServices.SetOrdersS(id, value);
     if (!result || result.modifiedCount !== 1) {
-      res.status(404).json({
+      return res.status(404).json({
         success: false,
         message: "User not found",
         error: {
@@ -161,13 +169,13 @@ const SetOrdersC = async (req: Request, res: Response) => {
         },
       });
     }
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Order created successfully!",
       data: null,
     });
   } catch (err) {
-    res.status(404).json({
+    return res.status(404).json({
       success: false,
       message: "User not found",
       error: {
@@ -184,7 +192,7 @@ const getOrdersC = async (req: Request, res: Response) => {
   const id = Number(req.params.userId);
   const result = await userServices.getOrdersS(id);
   if (!result) {
-    res.status(404).json({
+    return res.status(404).json({
       success: false,
       message: "User not found",
       error: {
@@ -193,7 +201,7 @@ const getOrdersC = async (req: Request, res: Response) => {
       },
     });
   } else {
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Order fetched successfully!",
       data: {
@@ -208,7 +216,7 @@ const getTotalPriceC = async (req: Request, res: Response) => {
   const id = Number(req.params.userId);
   const result = await userServices.getTotalPriceS(id);
   if (!result) {
-    res.status(404).json({
+    return res.status(404).json({
       success: false,
       message: "User not found",
       error: {
@@ -217,7 +225,7 @@ const getTotalPriceC = async (req: Request, res: Response) => {
       },
     });
   }
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     message: "Total price calculated successfully!",
     data: {

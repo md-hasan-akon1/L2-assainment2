@@ -42,13 +42,13 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const { error, value } = use_validation_1.default.validate(data);
         const result = yield user_service_1.userServices.createUser(value);
         if (error) {
-            res.status(201).json({
+            return res.status(201).json({
                 success: false,
                 massage: "User created failed!",
                 data: error.details,
             });
         }
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             massage: "User created successfully!",
             data: result,
@@ -71,14 +71,14 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 const getAllUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const result = yield user_service_1.userServices.getAllUser();
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             massage: "Users fetched successfully!",
             data: result,
         });
     }
     catch (err) {
-        res.send(err);
+        return res.send(err);
     }
 });
 //get A user
@@ -86,8 +86,8 @@ const getAUserC = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.userId;
     const result = yield user_service_1.userServices.getAUserS(Number(id));
     try {
-        if (result == null) {
-            res.status(404).json({
+        if (!result) {
+            return res.status(404).json({
                 success: false,
                 message: "User not found",
                 error: {
@@ -96,14 +96,14 @@ const getAUserC = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 },
             });
         }
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             massage: "Users fetched successfully!",
             data: result,
         });
     }
     catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             success: false,
             message: "User not found",
             error: {
@@ -120,7 +120,7 @@ const updateAUserC = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const data = req.body;
         const result = yield user_service_1.userServices.updateAUserS(id, data);
         if (result == null) {
-            res.status(404).json({
+            return res.status(404).json({
                 success: false,
                 message: "User not found",
                 error: {
@@ -129,14 +129,14 @@ const updateAUserC = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 },
             });
         }
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: "User updated successfully!",
             data: result,
         });
     }
     catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             success: false,
             message: err,
             error: {
@@ -152,7 +152,7 @@ const DeleteAUserC = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const id = Number(req.params.userId);
         const result = yield user_service_1.userServices.DeleteAUserS(id);
         if (!result) {
-            res.status(404).json({
+            return res.status(404).json({
                 success: false,
                 message: "User not found",
                 error: {
@@ -162,7 +162,7 @@ const DeleteAUserC = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             });
         }
         else if (result.deletedCount == 1) {
-            res.status(200).json({
+            return res.status(200).json({
                 success: true,
                 message: "User deleted successfully!",
                 data: null,
@@ -170,7 +170,7 @@ const DeleteAUserC = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         }
     }
     catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             success: false,
             massage: err,
         });
@@ -184,7 +184,7 @@ const SetOrdersC = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const { value } = use_validation_1.ordersSchema.validate(data);
         const result = yield user_service_1.userServices.SetOrdersS(id, value);
         if (!result || result.modifiedCount !== 1) {
-            res.status(404).json({
+            return res.status(404).json({
                 success: false,
                 message: "User not found",
                 error: {
@@ -193,14 +193,14 @@ const SetOrdersC = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 },
             });
         }
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: "Order created successfully!",
             data: null,
         });
     }
     catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             success: false,
             message: "User not found",
             error: {
@@ -215,7 +215,7 @@ const getOrdersC = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const id = Number(req.params.userId);
     const result = yield user_service_1.userServices.getOrdersS(id);
     if (!result) {
-        res.status(404).json({
+        return res.status(404).json({
             success: false,
             message: "User not found",
             error: {
@@ -225,7 +225,7 @@ const getOrdersC = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         });
     }
     else {
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: "Order fetched successfully!",
             data: {
@@ -239,7 +239,7 @@ const getTotalPriceC = (req, res) => __awaiter(void 0, void 0, void 0, function*
     const id = Number(req.params.userId);
     const result = yield user_service_1.userServices.getTotalPriceS(id);
     if (!result) {
-        res.status(404).json({
+        return res.status(404).json({
             success: false,
             message: "User not found",
             error: {
@@ -248,7 +248,7 @@ const getTotalPriceC = (req, res) => __awaiter(void 0, void 0, void 0, function*
             },
         });
     }
-    res.status(200).json({
+    return res.status(200).json({
         success: true,
         message: "Total price calculated successfully!",
         data: {
