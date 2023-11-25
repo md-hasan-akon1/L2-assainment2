@@ -1,5 +1,5 @@
 import mongoose, { model } from "mongoose";
-import bcrypt from "bcrypt"
+import bcrypt from "bcrypt";
 import {
   TAddress,
   TFullName,
@@ -13,20 +13,20 @@ const { Schema } = mongoose;
 const fullNameSchema = new Schema<TFullName>({
   firstName: { type: String, required: [true, "first name is required"] },
   lastName: { type: String, required: [true, "last name is required"] },
-  _id:false
+  _id: false,
 });
 const addressSchema = new Schema<TAddress>({
   street: { type: String, required: [true, "street  is required"] },
 
   city: { type: String, required: [true, " city is required"] },
   country: { type: String, required: [true, "country is required"] },
-  _id:false
+  _id: false,
 });
 const OrdersSchema = new Schema<TOrders>({
   productName: { type: String },
   price: { type: Number },
   quantity: { type: Number },
-  _id:false
+  _id: false,
 });
 
 const UserSchema = new Schema<TUser, UserModel>(
@@ -61,11 +61,10 @@ const UserSchema = new Schema<TUser, UserModel>(
   { strict: false, timestamps: false }
 );
 //password hashing
-UserSchema.pre('save',async function(next) {
-
-  this.password=await bcrypt.hash(this.password,Number(config.database_url))
-  next()
-})
+UserSchema.pre("save", async function (next) {
+  this.password = await bcrypt.hash(this.password, Number(config.database_url));
+  next();
+});
 //password hashing
 
 // UserSchema.post('save',async function( next) {
@@ -77,11 +76,10 @@ UserSchema.pre('save',async function(next) {
 //      next()
 // })
 
- //user checking by statics methods
+//user checking by statics methods
 UserSchema.statics.isUserExists = async function (id: number) {
   const existingUser = await User.findOne({ userId: id });
   return existingUser;
 };
-
 
 export const User = model<TUser, UserModel>("User", UserSchema);

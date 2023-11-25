@@ -47,14 +47,14 @@ const getAllUser = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err) {
-   return res.status(404).json({
-    success: false,
-    message: "User not found",
-    error: {
-      code: 404,
-      description: "User not found!",
-    },
-  });
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+      error: {
+        code: 404,
+        description: "User not found!",
+      },
+    });
   }
 };
 //get A user
@@ -63,7 +63,7 @@ const getAUserC = async (req: Request, res: Response) => {
   const result = await userServices.getAUserS(Number(id));
   try {
     if (!result) {
-       return res.status(404).json({
+      return res.status(404).json({
         success: false,
         message: "User not found",
         error: {
@@ -72,13 +72,13 @@ const getAUserC = async (req: Request, res: Response) => {
         },
       });
     }
-    return  res.status(200).json({
+    return res.status(200).json({
       success: true,
       massage: "Users fetched successfully!",
       data: result,
     });
   } catch (err) {
-   return  res.status(404).json({
+    return res.status(404).json({
       success: false,
       message: "User not found",
       error: {
@@ -112,14 +112,14 @@ const updateAUserC = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err) {
- return res.status(404).json({
-  success: false,
-  message: err,
-  error: {
-    code: 404,
-    description: "User not found!",
-  },
-})
+    return res.status(404).json({
+      success: false,
+      message: err,
+      error: {
+        code: 404,
+        description: "User not found!",
+      },
+    });
   }
 };
 // Delete A User
@@ -144,7 +144,6 @@ const DeleteAUserC = async (req: Request, res: Response) => {
         data: null,
       });
     }
-    
   } catch (err) {
     return res.status(404).json({
       success: false,
@@ -157,7 +156,7 @@ const SetOrdersC = async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.userId);
     const data = req.body;
-    const {value}=ordersSchema.validate(data)
+    const { value } = ordersSchema.validate(data);
     const result = await userServices.SetOrdersS(id, value);
     if (!result || result.modifiedCount !== 1) {
       return res.status(404).json({
